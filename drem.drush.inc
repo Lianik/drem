@@ -37,8 +37,12 @@ function drem_drush_command() {
 function drem_general_callback() {
   $args = func_get_args();
 
-  $process = new Process("drupal {$args[0]}");
-  $process->run();
+  $args = implode(' ', $args);
+  $process = new Process("drupal {$args}");
+  $process->setTty(TRUE);
+  $process->run(function($type, $buffer) {
+    echo $buffer;
+  });
   if (!$process->isSuccessful()) {
     throw new ProcessFailedException($process);
   }
